@@ -39,7 +39,7 @@ def md5 (input):
 source_dict = string_to_dict(source_stripped)
 source_dict_length = len(source_dict.keys())
 
-'''
+
 #GENERATE THE REDUCED WORDLIST
 wordlist_reduced = open('C:\\Users\\slava.sukhoy\\Desktop\\DataScience\\python\\wordlist_reduced','r+')
 wordlist_reduced.truncate(0) #Cleanup the file from the previous values
@@ -78,7 +78,7 @@ wordlist_reduced.close()
 print('number of word candidates found:', word_count)
 #found 2496 words.
 #END OF GENERATE THE REDUCED WORDLIST
-'''
+
 
 #GENERATE RAW PHRASE LIST
 wordlist_reduced = open('C:\\Users\\slava.sukhoy\\Desktop\\DataScience\\python\\wordlist_reduced','r')
