@@ -89,21 +89,45 @@ for line in wordlist_reduced: #push the reduced wordlist into a list from the fi
     wordlist_reduced_list.append(line)
 
 end = 2496
-start = 4
+start = 0
 #generate backbone uinteger list for generation of phrases, 2691 - number of words
 master_array = list(range(start, end))
 
 #last_tested = [4,915,1066] #fast forward to the loast tested
 
-#Generate and write in the file the phrases with the number of letters 18 (no permutations)
-#next step will be to generate the permutations of the found phrases
-for n in [3,4,5,6]: #n - number of words in the phrase
-key = 0
-    for i_lst in itertools.combinations_with_replacement(master_array, n):
-        #fast forward to the last tested
-        if i_lst == last_tested:
-            break
+#generate the permutations of the found raw phrase and check if any of the permutations have the right MD5
+def permutations (phrase_raw):
+    phrase_list = list(phrase_raw.split(' '))
+    for phrase_variant_lst in itertools.permutations(phrase_list):
+        phrase_variant = ''
+        for word in phrase_variant_lst:
+            if phrase_variant == '':
+                phrase_variant = word
+            else:
+                phrase_variant = phrase_variant + ' ' + word
+        checksum = md5(phrase_variant)
+        if checksum == md5_1: #'e4820b45d2277f3844eac66c903e84be'
+            print ('Solution 1: ', phrase_variant, ' md5 = ', md5_1)
+            with open('C:\\Users\\slava.sukhoy\\Desktop\\DataScience\\python\\anagram_solutions','a+') as solutions:
+                solutions.append('Solution 1: ' + phrase_variant + ' md5 = ' + md5_1 +'\n')
+                solutions.close
+        elif checksum == md5_2: #'23170acc097c24edb98fc5488ab033fe'
+            print ('Solution 2: ', phrase_variant, ' md5 = ', md5_2)
+            with open('C:\\Users\\slava.sukhoy\\Desktop\\DataScience\\python\\anagram_solutions','a+') as solutions:
+                solutions.append('Solution 2: ' + phrase_variant + ' md5 = ' + md5_2 +'\n')
+                solutions.close
+        elif checksum == md5_3: #'665e5bcb0c20062fe8abaaf4628bb154'
+            print ('Solution 3: ', phrase_variant, ' md5 = ', md5_3)
+            with open('C:\\Users\\slava.sukhoy\\Desktop\\DataScience\\python\\anagram_solutions','a+') as solutions:
+                solutions.append('Solution 3: ' + phrase_variant + ' md5 = ' + md5_3 +'\n')
+                solutions.close
+        else:
+            return None
 
+#Generate and write in the file the phrases with the number of letters 18 (no permutations)
+#and number of each letter occurence is the same as in the source
+for n in [3,4,5,6]: #n - number of words in the phrase
+    key = 0
     for i_lst in itertools.combinations_with_replacement(master_array, n):
         #i - list of numbers to test
         phrase = ''
@@ -114,10 +138,6 @@ key = 0
             else:
                 phrase = phrase + ' ' + wordlist_reduced_list[j]
         phrase_stripped =  strip_text(phrase)
-#        with open('C:\\Users\\slava.sukhoy\\Desktop\\DataScience\\python\\raw_phrases_last_processed', 'w+') as raw_phrases_last_processed:
-#            i_string = ','.join(map(str, i))
-#            raw_phrases_last_processed.write('['+i_string + '] : [' + phrase + ']')
-#            raw_phrases_last_processed.close()
         if len(phrase_stripped) == 18: #if length is OK, then compare the dict
             phrase_dict = string_to_dict(phrase_stripped)
             if len(phrase_dict.keys()) == source_dict_length:
@@ -125,115 +145,5 @@ key = 0
                     with open('C:\\Users\\slava.sukhoy\\Desktop\\DataScience\\python\\raw_phrases','a+') as raw_phrases:
                         raw_phrases.write(phrase + '\n')
                         raw_phrases.close()
+                    permutations(phrase)
 #END OF GENERATE RAW PHRASE LIST
-'''
-def phrase_constructor(list,wordlist,sub_list):
-    phrase = ''
-    for i in list:
-        if phrase == '':
-            phrase = wordlist[i]
-        else:
-            phrase = phrase + ' ' + wordlist[i]
-    phrase_stripped = strip_text(phrase)
-    phrase_length = len(phrase_stripped)
-
-#this piece just to record the last processed combination in the file
-    list_text = ''
-    for j in sub_list:
-        if list_text == '':
-            list_text = str(j)
-        else:
-            list_text = list_text + ',' + str(j)
-    with open('C:\\Users\\slava.sukhoy\\Desktop\\DataScience\\python\\last_checked_combination','w+') as log:
-        log.write('Combination [' + list_text + '], phrase: [' + phrase + ']')
-        log.close()
-    
-    if phrase_length == source_length:
-        phrase_dict = string_to_dict(phrase_stripped)
-        if phrase_dict == source_dict:
-        #if (md5(phrase) == 'md5_1' or md5(phrase) ==  'md5_2' or md5(phrase) ==  'md5_3'):
-            with open('C:\\Users\\slava.sukhoy\\Desktop\\DataScience\\python\\phrases_to_test','a+') as file:
-                file.write(phrase + '\n')
-                file.close()
-            return phrase
-    else:
-        return 'zz'
-
-def permutation(lst): #generate all permutations for each list generated by printCombinations
-    #https://www.geeksforgeeks.org/generate-all-the-permutation-of-a-list-in-python/
-    if len(lst) == 0:
-        return []
-    if len(lst) == 1:
-        return [lst]
-    l = []
-    b = range(len(lst))
-    for i in range(len(lst)):
-       m = lst[i]
-       remLst = lst[:i] + lst[i+1:]
-       for p in permutation(remLst):
-           l.append([m] + p)
-    return l
-
-def printCombination(arr, arr_len, sub_arr_len): #triggers generation of combinations of the lists
-#https://www.geeksforgeeks.org/print-all-possible-combinations-of-r-elements-in-a-given-array-of-size-n/      
-    data = [0]*sub_arr_len
-    combinationUtil(arr, data, 0, arr_len - 1, 0, sub_arr_len)
-                    # arr[]:       Input/master Array
-                    # data[]:      Temporary array to store current combination 
-                    # start & end: Staring and Ending indexes of the input array arr[]
-                    # index:       Current index in data[] (data[] has length = r)
-                    # r:           Length of the sub array
-
-phrase_list = []
-
-
-
-#generate combinations of numbers
-
-def combinationUtil(arr, data, start, end, index, sub_arr_len):
-    sub_array = []
-    if (index == sub_arr_len):
-        for j in range(sub_arr_len):
-            sub_array.append(data[j])
-        #1-st round - find the phrases that have the same length as the source
-
-        
-        #Permutations will not be used at the 1-st round.
-        for p in permutation(sub_array): #p is array.
-            +phrase = phrase_constructor(p, wordlist_reduced_list,sub_array)
-            if phrase != 'zz':
-                phrase_list.append(phrase)
-            else:
-                pass
-        return phrase_list
-
-    i = start #at start - i = 0
-    while(i <= end and end - i + 1 >= sub_arr_len - index): # i <= length of the master array;
-        data[index] = arr[i]
-        combinationUtil(arr, data, i + 1, end, index + 1, sub_arr_len)
-        i += 1 #go to the get member of the master array
-'''
-
-'''
-arr = []
-
-sub_arr_len = 3  #2 - checked, no hits (as expected)
-arr_len = len(arr)
-#ww = []
-#ww = printCombination(arr, arr_len, sub_arr_len)
-#print (ww)
-
-for i in itertools.combinations_with_replacement(arr, sub_arr_len):
-    phrase = ''
-    for j in i:
-        if phrase == '':
-             if phrase == '':
-            phrase = wordlist[i]
-        else:
-            phrase = phrase + ' ' + wordlist[i]
-    phrase_stripped =  strip_text (phrase)
-    if len(phrase_stripped) == 
-    
-
-
-'''
