@@ -88,10 +88,9 @@ for line in wordlist_reduced: #push the reduced wordlist into a list from the fi
     line = line.rstrip('\n')
     wordlist_reduced_list.append(line)
 
-end = 2496
 start = 0
 #generate backbone uinteger list for generation of phrases, 2691 - number of words
-master_array = list(range(start, end))
+master_array = list(range(start, word_count - 1))
 
 #last_tested = [4,915,1066] #fast forward to the loast tested
 
